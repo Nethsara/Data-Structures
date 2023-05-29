@@ -27,80 +27,83 @@ class NoSuchElementException extends RuntimeException {
 
 class Stack implements StackInterface {
     private int[] dataArray;
-    private int nextIndex;
-    private float loadFactor;
 
-    Stack(int initialCapacity, float loadFactor) {
-        dataArray = new int[initialCapacity];
-        nextIndex = 0;
-        this.loadFactor = loadFactor;
+    Stack() {
+        dataArray = new int[0];
     }
 
     private void extendArray() {
-        int newSize = dataArray.length + (int) (dataArray.length * loadFactor);
-        int[] temp = new int[newSize];
+        int[] temp = new int[dataArray.length + 1];
+        for (int i = 0; i < dataArray.length; i++) {
+            temp[i + 1] = dataArray[i];
+        }
         dataArray = temp;
+
     }
 
     public void push(int data) {
-        if (nextIndex >= dataArray.length) {
-            extendArray();
-        }
-        dataArray[nextIndex++] = data;
+        extendArray();
+        dataArray[0] = data;
     }
 
     public void pop() {
-        if (nextIndex > 0) {
-            nextIndex--;
+        if (!isEmpty()) {
+            int[] temp = new int[dataArray.length - 1];
+            for (int i = 0; i < temp.length; i++) {
+                temp[i] = dataArray[i + 1];
+            }
+            dataArray = temp;
         }
     }
 
     public void printStack() {
         System.out.print("[");
-        for (int i = nextIndex - 1; i >= 0; i--) {
+        for (int i = 0; i < dataArray.length; i++) {
             System.out.print(dataArray[i] + ", ");
         }
         System.out.println(isEmpty() ? "empty]" : "\b\b]");
     }
 
     public int peek() {
-        if (nextIndex <= 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException("Empty Stack");
         }
-        return dataArray[nextIndex - 1];
+        return dataArray[0];
     }
 
     public int poll() {
-        if (nextIndex <= 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException("Empty Stack");
         }
-        return dataArray[--nextIndex];
+        int topData = dataArray[0];
+        pop();
+        return topData;
     }
 
     public int size() {
-        return nextIndex;
+        return dataArray.length;
     }
 
     public void clear() {
-        nextIndex = 0;
+        dataArray = new int[0];
     }
 
     public int[] toArray() {
-        int[] temp = new int[nextIndex];
-        for (int i = 0, j = nextIndex - 1; i < nextIndex; i++, j--) {
-            temp[i] = dataArray[j];
+        int[] temp = new int[dataArray.length];
+        for (int i = 0; i < dataArray.length; i++) {
+            temp[i] = dataArray[i];
         }
         return temp;
     }
 
     public boolean isEmpty() {
-        return nextIndex <= 0;
+        return dataArray.length == 0;
     }
 }
 
 class Demo {
     public static void main(String args[]) {
-        Stack s1 = new Stack(100, .5f);
+        Stack s1 = new Stack();
         s1.printStack(); // [empty]
         System.out.println("Size of the stack : " + s1.size());// 0
         s1.push(10);
