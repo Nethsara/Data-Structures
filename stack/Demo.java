@@ -9,27 +9,25 @@ class Customer {
         this.name = name;
     }
 
-    public String getCustomerDetails() {
+    public String toString() {
         return code + "-" + name;
     }
 
-    public boolean equals(Customer customer) {
-        return this.code == customer.code;
+    public boolean equals(Object obj) {
+        return obj instanceof Customer ? ((Customer) obj).code == this.code : false;
     }
 }
 
-interface CustomerStack {
-    public void push(Customer customer);
-
-    public void printStack();
+interface Stack {
+    public void push(Object obj);
 
     public void pop();
 
-    public Customer peek();
+    public Object peek();
 
-    public Customer poll();
+    public Object poll();
 
-    public Customer[] toArray();
+    public Object[] toArray();
 
     public void clear();
 
@@ -37,49 +35,49 @@ interface CustomerStack {
 
     public boolean isEmpty();
 
-    public int search(Customer customer);
+    public int search(Object obj);
 }
 
-class CustomerStackImpl implements CustomerStack {
-    private Customer[] customerArray;
+class StackImpl implements Stack {
+    private Object[] objectArray;
     private int nextIndex = 0;
 
-    CustomerStackImpl() {
-        customerArray = new Customer[100];
+    StackImpl() {
+        objectArray = new Object[100];
     }
 
-    public void push(Customer customer) {
-        customerArray[nextIndex++] = customer;
+    public void push(Object obj) {
+        objectArray[nextIndex++] = obj;
     }
 
     public void pop() {
         if (!isEmpty()) {
-            customerArray[--nextIndex] = null;
+            objectArray[--nextIndex] = null;
         }
     }
 
-    public void printStack() {
-        System.out.print("[");
+    public String toString() {
+        String list = "[";
         for (int i = nextIndex - 1; i >= 0; i--) {
-            System.out.print(customerArray[i].getCustomerDetails() + ", ");
+            list += objectArray[i] + ", ";
         }
-        System.out.println(isEmpty() ? "empty]" : "\b\b]");
+        return isEmpty() ? "[empty]" : list + "\b\b]";
     }
 
-    public Customer peek() {
+    public Object peek() {
         if (isEmpty()) {
             return null;
         }
-        return customerArray[nextIndex - 1];
+        return objectArray[nextIndex - 1];
     }
 
-    public Customer poll() {
+    public Object poll() {
         if (isEmpty()) {
             return null;
         }
-        Customer customer = customerArray[nextIndex - 1];
+        Object obj = objectArray[nextIndex - 1];
         pop();
-        return customer;
+        return obj;
     }
 
     public int size() {
@@ -90,10 +88,10 @@ class CustomerStackImpl implements CustomerStack {
         nextIndex = 0;
     }
 
-    public Customer[] toArray() {
-        Customer[] temp = new Customer[nextIndex];
+    public Object[] toArray() {
+        Object[] temp = new Object[nextIndex];
         for (int i = 0, j = nextIndex - 1; i < nextIndex; i++, j--) {
-            temp[i] = customerArray[j];
+            temp[i] = objectArray[j];
         }
         return temp;
     }
@@ -102,9 +100,9 @@ class CustomerStackImpl implements CustomerStack {
         return nextIndex == 0;
     }
 
-    public int search(Customer customer) {
+    public int search(Object obj) {
         for (int i = 0; i < nextIndex; i++) {
-            if (customerArray[i].equals(customer)) {
+            if (objectArray[i].equals(obj)) {
                 return i;
             }
         }
@@ -114,36 +112,26 @@ class CustomerStackImpl implements CustomerStack {
 
 class Demo {
     public static void main(String args[]) {
-        CustomerStack custStack = new CustomerStackImpl();
-        System.out.println("Size of the stack : " + custStack.size());
-        custStack.printStack();
-        System.out.println();
+        Stack intStack = new StackImpl();
+        intStack.push(100); // autobox, 100-->new Integer(100)
+        intStack.push(200);
+        intStack.push(300);
+        intStack.push(400);
+        intStack.push(500);
+        System.out.println(intStack);
 
-        custStack.push(new Customer(1001, "Danapala"));
-        custStack.push(new Customer(1002, "Gunapala"));
-        custStack.push(new Customer(1003, "Somapala"));
-        custStack.push(new Customer(1004, "Siripala"));
-        custStack.push(new Customer(1005, "Amarapala"));
-        custStack.printStack();
-        System.out.println("Size of the stack : " + custStack.size()); // 5
-        System.out.println();
+        Stack strStack = new StackImpl();
+        strStack.push("Danapala");
+        strStack.push("Gunapala");
+        strStack.push("Somapala");
+        strStack.push("Siripala");
+        strStack.push("Amarapala");
+        System.out.println(strStack);
 
-        custStack.pop();
-        custStack.printStack();
-        System.out.println("Size of the stack : " + custStack.size()); // 5
-        System.out.println();
-
-        Customer topCustomer = custStack.peek();
-        System.out.println("Top Customer : " + topCustomer.getCustomerDetails());
-        custStack.printStack();
-
-        System.out.println();
-        topCustomer = custStack.poll();
-        System.out.println("Top Customer : " + topCustomer.getCustomerDetails());
-        custStack.printStack();
-
-        System.out.println();
-
-        System.out.println("Index of 1002-Gunapala : " + custStack.search(new Customer(1002, "Gunapala")));
+        Stack custStack = new StackImpl();
+        custStack.push(new Customer(1001, "Nimal"));
+        custStack.push(new Customer(1002, "Bimal"));
+        custStack.push(new Customer(1003, "Ranil"));
+        System.out.println(custStack);
     }
 }
