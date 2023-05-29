@@ -39,6 +39,7 @@ class Stack implements StackInterface {
     private void extendArray() {
         int newSize = dataArray.length + (int) (dataArray.length * loadFactor);
         int[] temp = new int[newSize];
+        dataArray = temp;
     }
 
     public void push(int data) {
