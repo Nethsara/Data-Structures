@@ -10,7 +10,12 @@ interface StackInterface {
     public int peek();
 
     public int poll();
-    /* public int[] toArray(); */
+
+    public int[] toArray();
+
+    public void clear();
+
+    public boolean isEmpty();
 
 }
 
@@ -23,13 +28,23 @@ class NoSuchElementException extends RuntimeException {
 class Stack implements StackInterface {
     private int[] dataArray;
     private int nextIndex;
+    private float loadFactor;
 
-    Stack() {
-        dataArray = new int[100];
+    Stack(int initialCapacity, float loadFactor) {
+        dataArray = new int[initialCapacity];
         nextIndex = 0;
+        this.loadFactor = loadFactor;
+    }
+
+    private void extendArray() {
+        int newSize = dataArray.length + (int) (dataArray.length * loadFactor);
+        int[] temp = new int[newSize];
     }
 
     public void push(int data) {
+        if (nextIndex >= dataArray.length) {
+            extendArray();
+        }
         dataArray[nextIndex++] = data;
     }
 
@@ -44,7 +59,7 @@ class Stack implements StackInterface {
         for (int i = nextIndex - 1; i >= 0; i--) {
             System.out.print(dataArray[i] + ", ");
         }
-        System.out.println("\b\b]");
+        System.out.println(isEmpty() ? "empty]" : "\b\b]");
     }
 
     public int peek() {
@@ -61,30 +76,45 @@ class Stack implements StackInterface {
         return dataArray[--nextIndex];
     }
 
-    /*
-     * public int[] toArray();
-     * 
-     */
+    public int size() {
+        return nextIndex;
+    }
+
+    public void clear() {
+        nextIndex = 0;
+    }
+
+    public int[] toArray() {
+        int[] temp = new int[nextIndex];
+        for (int i = 0, j = nextIndex - 1; i < nextIndex; i++, j--) {
+            temp[i] = dataArray[j];
+        }
+        return temp;
+    }
+
+    public boolean isEmpty() {
+        return nextIndex <= 0;
+    }
 }
 
 class Demo {
     public static void main(String args[]) {
-        Stack s1 = new Stack();
+        Stack s1 = new Stack(100, .5f);
+        s1.printStack(); // [empty]
+        System.out.println("Size of the stack : " + s1.size());// 0
         s1.push(10);
         s1.push(20);
         s1.push(30);
         s1.push(40);
         s1.push(50);
-        s1.printStack(); // [50,40,30,20,10]
-        System.out.println();
 
-        int topData = s1.peek();
-        System.out.println("Top data : " + topData); // 50
         s1.printStack(); // [50,40,30,20,10]
-        System.out.println();
+        System.out.println("Size of the stack : " + s1.size());// 5
 
-        topData = s1.poll();
-        System.out.println("Top data : " + topData); // 50
-        s1.printStack(); // [40,30,20,10]
+        s1.clear();
+        s1.printStack(); // [empty]
+        System.out.println("Size of the stack : " + s1.size());// 0
+
+        s1.peek(); // throw an exception
     }
 }
